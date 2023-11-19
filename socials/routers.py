@@ -8,12 +8,12 @@ router = routers.DefaultRouter(trailing_slash=True)
 
 
 #user
-router.register(r"register", RegisterViewSet),
-router.register(r"login", LoginViewSet),
-router.register(r"userprofile", UserProfileViewSet),
+router.register(r"register", RegisterViewSet, basename="register"),
+router.register(r"login", LoginViewSet, basename="login"),
+router.register(r"userprofile", UserProfileViewSet, basename="userprofile"),
 #posts
-router.register(r"posts", PostViewset),
+router.register(r"posts", PostViewset, basename="posts"),
 #comments
-router.register(r"comments", CommentViewset),
+router.register(r"comments", CommentViewset, basename="comments"),
 #likes
-router.register(r"likes", LikeViewSet),
+router.register(r"likes", LikeViewSet, basename="likes"),

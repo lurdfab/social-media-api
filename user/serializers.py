@@ -31,7 +31,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     def get_token(self, obj):
         if obj:
-            token = Token.objects.create(user=obj)
+            token, created = Token.objects.get_or_create(user=obj)
             return token.key
         return None
 
@@ -47,8 +47,13 @@ class LoginSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'password')
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
 class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('gender', 'date_of_birth', 'address', 'phone_number', 'bio', 'profile_picture')
+        fields = ('gender', 'date_of_birth', 'address', 'phone_number', 'bio', 'profile_picture', 'followers')

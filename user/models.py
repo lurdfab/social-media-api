@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.utils.translation import gettext_lazy as _
@@ -11,6 +12,8 @@ GENDER = (
     ("transgender", "transgender")
 )
 
+# def get_default_uuid():
+    # return uuid.uuid4().hex
 class User(AbstractBaseUser, PermissionsMixin):
     """
     An abstract base class implementing a fully featured User model with
@@ -18,7 +21,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     Username and password are required. Other fields are optional.
     """
+    
 
+    # uuid = models.CharField(max_length=32, editable=False, null=False,
+    #                         blank=False, unique=True, default=get_default_uuid)
     username_validator = UnicodeUsernameValidator()
 
     username = models.CharField(
@@ -79,6 +85,7 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=15)
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    followers = models.ManyToManyField(User, related_name='following', blank=True)
 
 
     class Meta:
