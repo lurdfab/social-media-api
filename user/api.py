@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from likes.mixins import *
 
 class RegisterViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -36,7 +37,7 @@ class RegisterViewSet(viewsets.ModelViewSet):
 class LoginViewSet(viewsets.ModelViewSet):
     serializer_class = LoginSerializer
     queryset = User.objects.all()
-    authentication_classes = [TokenAuthentication]
+    authentication_class = [TokenAuthentication]
 
     
     def post(self, request:Request): 
@@ -64,7 +65,7 @@ class LoginViewSet(viewsets.ModelViewSet):
         return Response(data=content, status=status.HTTP_200_OK )
     
 class LogoutViewSet(viewsets.ModelViewSet):
-    authentication_classes = [TokenAuthentication]  #Use the appropriate authentication method
+    authentication_class = [TokenAuthentication]  #Use the appropriate authentication method
   
 
     def post(self, request):
@@ -73,42 +74,11 @@ class LogoutViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserViewSet(LikedResourceMixin, viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-class UserProfileViewSet(viewsets.ModelViewSet):
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
 
-    @action(detail=True, methods=['post'])
-    def follow(self, request, pk=None):
-        follower = self.request.user  # The user performing the follow action
-        followee = self.get_object().user  # The user being followed
-
-        if follower == followee:
-            return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
-
-        profile = self.get_object()
-        profile.followers.add(follower)
-        profile.save()
-
-        return Response({"detail": f"You are now following {followee.username}."}, status=status.HTTP_200_OK)
-
-    @action(detail=True, methods=['post'])
-    def unfollow(self, request, pk=None):
-        follower = self.request.user  # The user performing the unfollow action
-        followee = self.get_object().user  # The user being unfollowed
-
-        profile = self.get_object()
-        profile.followers.remove(follower)
-        profile.save()
-
-        return Response({"detail": f"You have unfollowed {followee.username}."}, status=status.HTTP_200_OK)
-    
-    # def perform_create(self, serializer):
-    #     serializer.save(user=self.request.user)
     
     

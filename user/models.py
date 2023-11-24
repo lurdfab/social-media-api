@@ -57,6 +57,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
+    gender = models.CharField(choices=GENDER, max_length=50, default="male")
+    date_of_birth = models.DateField(null=True,blank=True)
+    address = models.CharField(max_length=200, null=True,blank=True)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    bio = models.TextField(blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+  
 
 
     objects = UserManager()
@@ -77,23 +84,5 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    gender = models.CharField(choices=GENDER, max_length=50)
-    date_of_birth = models.DateField()
-    address = models.CharField(max_length=200)
-    phone_number = models.CharField(max_length=15)
-    bio = models.TextField(blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
-    followers = models.ManyToManyField(User, related_name='following', blank=True)
 
-
-    class Meta:
-        verbose_name = _("userProfile")
-        verbose_name_plural = _("userProfiles")
-
-        
-    
-    def __str__(self):
-        return self.user.username
 
