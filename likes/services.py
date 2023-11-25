@@ -38,7 +38,6 @@ def remove_like(obj, user):
             return
 
         like = qs.first()
-        account = like.account
         qs.delete()
 
 def get_fans(obj):
