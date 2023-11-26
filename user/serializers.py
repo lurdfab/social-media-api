@@ -4,7 +4,9 @@ from rest_framework.validators import ValidationError
 from rest_framework.authtoken.models import Token
 from likes import services
 from posts.models import Post
+from comments.models import *
 from posts.serializers import PostsLikesSerializer
+from comments.serializers import *
 
 class RegisterSerializer(serializers.ModelSerializer):
     #reason we do these below even after listing the fields in the class meta is to enforce certain parameters for the fields, we can do without it 
@@ -58,17 +60,22 @@ class FollowersSerializer(serializers.ModelSerializer):
         fields = ['id', 'username',]
 class UserSerializer(serializers.ModelSerializer):
     followers = serializers.SerializerMethodField()
-    post_likes = serializers.SerializerMethodField() 
+    post_likes = serializers.SerializerMethodField()
+    comment_likes = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'username', 'followers', 'post_likes']
+        fields = ['id', 'username', 'followers', 'post_likes', 'comment_likes']
 
 
 
     def get_followers(self, obj):
-        followers = services.get_fans(obj)
+        followers = services.get_fans(obj) #for following and unfollowing feature
         return FollowersSerializer(followers, many=True).data
     
     def get_post_likes(self, obj):
         likes = services.get_liked(obj.id, Post)
-        return PostsLikesSerializer(likes, many=True).data
+        return PostsLikesSerializer(likes, many=True).data #for likes and dislikes feature
+    
+    def get_comment_likes(self, obj):
+        comments = services.get_liked(obj.id, Comment)
+        return CommentLikesSerializer(comments, many=True).data
